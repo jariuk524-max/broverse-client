@@ -5,6 +5,20 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
+    if (body.callback_query) {
+      const { id } = body.callback_query;
+      // Acknowledge callback to prevent retry
+      const CLIENT_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+      if (CLIENT_BOT_TOKEN) {
+        await fetch(`https://api.telegram.org/bot${CLIENT_BOT_TOKEN}/answerCallbackQuery`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ callback_query_id: id }),
+        });
+      }
+      return NextResponse.json({ ok: true });
+    }
+
     if (body.message) {
       const chatId = body.message.chat.id;
       await sendClientWelcome(chatId);

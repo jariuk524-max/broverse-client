@@ -19,19 +19,23 @@ export async function createOrderInSupabase(payload: {
   client_name?: string;
   client_phone?: string;
   client_comment?: string;
+  client_chat_id?: number;
 }) {
+  const metadata: Record<string, unknown> = {};
+  if (payload.client_comment) metadata.description = payload.client_comment;
+  if (payload.price) metadata.price = payload.price;
+  if (payload.client_chat_id) metadata.client_chat_id = payload.client_chat_id;
+
   const { data, error } = await supabase
     .from('orders')
     .insert({
-      title: payload.title,
-      service: payload.service || 'cleaning',
+      service_name: payload.title,
       address: payload.address || '',
-      price: payload.price || 0,
       lat: payload.lat || 55.7558 + (Math.random() - 0.5) * 0.04,
       lng: payload.lng || 37.6173 + (Math.random() - 0.5) * 0.04,
       client_name: payload.client_name || '',
       client_phone: payload.client_phone || '',
-      client_comment: payload.client_comment || '',
+      metadata: Object.keys(metadata).length > 0 ? metadata : null,
       status: 'new',
     })
     .select()

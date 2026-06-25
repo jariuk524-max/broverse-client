@@ -21,6 +21,17 @@ interface OrderModalProps {
   onClose: () => void;
 }
 
+function getClientChatId(): number | null {
+  try {
+    // @ts-expect-error Telegram WebApp SDK
+    const tg = window.Telegram?.WebApp;
+    if (tg?.initDataUnsafe?.user?.id) {
+      return tg.initDataUnsafe.user.id;
+    }
+  } catch {}
+  return null;
+}
+
 export default function OrderModal({ service, onClose }: OrderModalProps) {
   const [step, setStep] = useState(1);
   const [name, setName] = useState('');
@@ -72,6 +83,7 @@ export default function OrderModal({ service, onClose }: OrderModalProps) {
       client_name: name,
       client_phone: phone,
       client_comment: `${dateOption === 'custom' ? customDate : dateOption} ${timeSlot} — ${comment}`,
+      client_chat_id: getClientChatId() ?? undefined,
     });
     setSubmitted(true);
   }, [service, address, dateOption, customDate, timeSlot, name, phone, comment]);

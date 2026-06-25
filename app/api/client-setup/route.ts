@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     if (action === 'set-webhook') {
       const data = await tg('setWebhook', {
         url: `${CLIENT_WEBAPP_URL}/api/client-webhook`,
-        allowed_updates: ['message'],
+        allowed_updates: ['message', 'callback_query'],
       });
       return NextResponse.json({ webhook: data });
     }
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       });
       const hook = await tg('setWebhook', {
         url: `${CLIENT_WEBAPP_URL}/api/client-webhook`,
-        allowed_updates: ['message'],
+        allowed_updates: ['message', 'callback_query'],
       });
       return NextResponse.json({ deleteWebhook: del, menu, webhook: hook });
     }
