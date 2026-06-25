@@ -63,16 +63,15 @@ export default function OrderModal({ service, onClose }: OrderModalProps) {
   ];
 
   const handleSubmit = useCallback(async () => {
+    const price = parseInt(service.price.replace(/\s/g, ''));
     await createOrderInSupabase({
-      service_name: `${service.brand} — ${service.name}`,
+      title: `${service.brand} — ${service.name}`,
+      service: service.domain === 'wash' ? 'cleaning' : service.domain === 'build' ? 'assembly' : 'plumbing',
       address: address || `Москва, ${service.name}`,
+      price,
       client_name: name,
       client_phone: phone,
-      metadata: {
-        description: `${dateOption === 'custom' ? customDate : dateOption} ${timeSlot} — ${comment}`,
-        price: service.price,
-        domain: service.domain,
-      },
+      client_comment: `${dateOption === 'custom' ? customDate : dateOption} ${timeSlot} — ${comment}`,
     });
     setSubmitted(true);
   }, [service, address, dateOption, customDate, timeSlot, name, phone, comment]);

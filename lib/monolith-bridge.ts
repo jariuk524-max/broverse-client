@@ -1,29 +1,37 @@
+import type { BroverseLeadPayload } from './domains';
 import { createClient } from '@supabase/supabase-js';
+
+const MONOLITH_ORIGIN =
+  process.env.NEXT_PUBLIC_MONOLITH_URL ?? 'http://localhost:3000';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-/** Создаёт заказ напрямую в Supabase (реальная схема orders) */
+/** Создаёт заказ напрямую в Supabase */
 export async function createOrderInSupabase(payload: {
-  service_name: string;
-  client_name?: string;
-  client_phone?: string;
+  title: string;
+  service?: string;
   address?: string;
+  price?: number;
   lat?: number;
   lng?: number;
-  metadata?: Record<string, unknown>;
+  client_name?: string;
+  client_phone?: string;
+  client_comment?: string;
 }) {
   const { data, error } = await supabase
     .from('orders')
     .insert({
-      service_name: payload.service_name,
-      client_name: payload.client_name || '',
-      client_phone: payload.client_phone || '',
+      title: payload.title,
+      service: payload.service || 'cleaning',
       address: payload.address || '',
+      price: payload.price || 0,
       lat: payload.lat || 55.7558 + (Math.random() - 0.5) * 0.04,
       lng: payload.lng || 37.6173 + (Math.random() - 0.5) * 0.04,
-      metadata: payload.metadata || null,
+      client_name: payload.client_name || '',
+      client_phone: payload.client_phone || '',
+      client_comment: payload.client_comment || '',
       status: 'new',
     })
     .select()
@@ -35,33 +43,44 @@ export async function createOrderInSupabase(payload: {
   }
 
   console.log('[ClientSite] Order created:', data.id);
-
-  // Send Telegram notification
-  try {
-    await fetch('/api/telegram-notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order: data }),
-    });
-  } catch (e) {
-    console.error('[ClientSite] Telegram notify failed:', e);
-  }
-
   return data;
 }
 
-/** Fetches orders from Supabase for display */
-export async function fetchOrdersFromSupabase() {
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(50);
+const MONOLITH_WINDOW_NAME = 'broverse-monolith';
 
-  if (error || !data) {
-    console.error('[ClientSite] Fetch error:', error);
-    return [];
+let monolithWindow: Window | null = null;
+
+function ensureMonolithWindow(): Window | null {
+  if (typeof window === 'undefined') return null;
+
+  if (monolithWindow && !monolithWindow.closed) {
+    monolithWindow.focus();
+    return monolithWindow;
   }
 
-  return data;
+  monolithWindow = window.open(MONOLITH_ORIGIN, MONOLITH_WINDOW_NAME);
+  return monolithWindow;
+}
+
+function postLead(win: Window, payload: BroverseLeadPayload) {
+  win.postMessage({ type: 'BROVERSE_LEAD', payload }, MONOLITH_ORIGIN);
+}
+
+/** Отправляет лид в Монолит (:3000) через postMessage */
+export function sendLeadToMonolith(payload: BroverseLeadPayload): boolean {
+  const win = ensureMonolithWindow();
+  if (!win) return false;
+
+  const message = { type: 'BROVERSE_LEAD' as const, payload };
+
+  postLead(win, payload);
+
+  [600, 1500, 3000].forEach((ms) => {
+    setTimeout(() => {
+      if (win.closed) return;
+      win.postMessage(message, MONOLITH_ORIGIN);
+    }, ms);
+  });
+
+  return true;
 }

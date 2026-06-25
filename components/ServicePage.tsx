@@ -164,7 +164,7 @@ export default function ServicePage({ domainId }: ServicePageProps) {
 
   return (
     <div className="min-h-[100dvh] bg-[#FFFFFF]">
-      <header className="sticky top-0 z-10 backdrop-blur-3xl bg-white/5 border-b border-white/10">
+      <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/70 border-b border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
         <div className="mx-auto flex h-14 sm:h-16 max-w-lg items-center justify-between px-4 sm:px-5">
           <Link href="/" className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold text-zinc-900 hover:text-zinc-600 transition-colors">
             <ArrowLeft size={16} />
@@ -189,7 +189,7 @@ export default function ServicePage({ domainId }: ServicePageProps) {
         </div>
 
         {config && config.priceBase > 0 && (
-          <div className="mb-6 p-4 rounded-[40px] bg-white/5 backdrop-blur-3xl border border-white/10">
+          <div className="mb-6 p-4 rounded-[24px] bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
             <div className="flex items-center justify-between">
               <span className="text-xs sm:text-sm text-zinc-500">Стоимость от</span>
               <span className="text-xl sm:text-2xl font-black text-zinc-900">{config.priceBase} ₽</span>
@@ -199,7 +199,7 @@ export default function ServicePage({ domainId }: ServicePageProps) {
 
         <div className="space-y-3 sm:space-y-4">
           {domain.categories.map((category) => (
-            <div key={category.name} className="rounded-[40px] bg-white/5 backdrop-blur-3xl border border-white/10 overflow-hidden">
+            <div key={category.name} className="rounded-[24px] bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden">
               <button type="button" onClick={() => toggleCategory(category.name)} className="w-full flex items-center justify-between p-4 sm:p-5 text-left hover:bg-zinc-50 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-1 h-8 rounded-full" style={{ backgroundColor: bgColor }} />
@@ -232,7 +232,7 @@ export default function ServicePage({ domainId }: ServicePageProps) {
           ))}
         </div>
 
-        <div className="mt-6 sm:mt-8 p-4 sm:p-5 rounded-[40px] bg-white/5 backdrop-blur-3xl border border-white/10">
+        <div className="mt-6 sm:mt-8 p-4 sm:p-5 rounded-[24px] bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
           <h3 className="text-xs sm:text-sm font-bold text-zinc-900 mb-3">Почему выбирают нас</h3>
           <div className="space-y-2.5">
             <div className="flex items-center gap-2.5"><Star size={14} className="text-yellow-500 fill-yellow-500" /><span className="text-[10px] sm:text-xs text-zinc-600">Проверенные мастера с Trust Level</span></div>
@@ -245,11 +245,11 @@ export default function ServicePage({ domainId }: ServicePageProps) {
 
       <div className="fixed bottom-0 left-0 right-0 bg-white/70 backdrop-blur-xl border-t border-white/20 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] p-4" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
         <div className="mx-auto max-w-lg flex gap-3">
-          <a href="tel:+79001234567" className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 rounded-[40px] bg-zinc-900 text-white text-xs sm:text-sm font-bold hover:bg-zinc-800 transition-colors">
+          <a href="tel:+79001234567" className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 rounded-[20px] bg-zinc-900 text-white text-xs sm:text-sm font-bold hover:bg-zinc-800 transition-colors">
             <Phone size={16} />
             Позвонить
           </a>
-          <Link href={`/order?service=${domain.id}&from=web`} className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 rounded-[40px] text-white text-xs sm:text-sm font-bold transition-colors hover:opacity-90" style={{ backgroundColor: bgColor }}>
+          <Link href={`/order?service=${domain.id}&from=web`} className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 rounded-[20px] text-white text-xs sm:text-sm font-bold transition-colors hover:opacity-90" style={{ backgroundColor: bgColor }}>
             <MessageCircle size={16} />
             Оставить заявку
           </Link>
